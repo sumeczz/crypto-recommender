@@ -1,0 +1,12 @@
+/* Vlastní styly */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  #crypto-list div {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  #crypto-list div:hover {
+    transform: scale(1.02);
+  }
