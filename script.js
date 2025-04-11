@@ -1,66 +1,92 @@
-const API_BASE = "https://api.coingecko.com/api/v3";
-
-async function fetchCryptoData() {
-  const res = await fetch(`${API_BASE}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false`);
-  const data = await res.json();
-  return data;
-}
-
-function technicalAnalysis(crypto) {
-  const score = crypto.price_change_percentage_24h;
-  if (score > 5) return { recommended: true, reason: "Technická analýza: Cena vzrostla o více než 5 % za 24 hodin." };
-  if (score < -5) return { recommended: false, reason: "Technická analýza: Cena klesla o více než 5 % za 24 hodin." };
-  return { recommended: false, reason: "Technická analýza: Nedostatečný pohyb ceny." };
-}
-
-async function showDetail(cryptoId, name) {
-  const res = await fetch(`${API_BASE}/coins/${cryptoId}/market_chart?vs_currency=usd&days=7`);
-  const data = await res.json();
-
-  const ctx = document.getElementById('price-chart').getContext('2d');
-  const prices = data.prices.map(p => p[1]);
-  const labels = data.prices.map(p => new Date(p[0]).toLocaleDateString());
-
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Cena (USD)',
-        data: prices,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
-      }]
-    }
+// === Přepínání světlého / tmavého režimu ===
+document.getElementById('theme-toggle').addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+    document.body.classList.toggle('dark-mode');
   });
-
-  document.getElementById("detail-name").innerText = name;
-  document.getElementById("crypto-detail").classList.remove("hidden");
-}
-
-async function renderCryptos() {
-  const cryptos = await fetchCryptoData();
-  const container = document.getElementById("crypto-list");
-  container.innerHTML = "";
-
+  
+  // === Akceptace cookies ===
+  const cookieBanner = document.getElementById('cookie-banner');
+  const acceptCookies = document.getElementById('accept-cookies');
+  
+  if (!localStorage.getItem('cookiesAccepted')) {
+    cookieBanner.style.display = 'block';
+  }
+  
+  acceptCookies.addEventListener('click', () => {
+    localStorage.setItem('cookiesAccepted', 'true');
+    cookieBanner.style.display = 'none';
+  });
+  
+  // === Fiktivní aktualizace BTC indexu a tržní kapitalizace ===
+  document.getElementById('btc-index').innerText = '$64,350';
+  document.getElementById('market-cap').innerText = '$2.48 bil.';
+  document.getElementById('total-cap').innerText = '$2.48 bil.';
+  document.getElementById('daily-volume').innerText = '$103 mld.';
+  document.getElementById('btc-dominance').innerText = '49.1%';
+  
+  // === Rotující fakta ===
+  const facts = [
+    'Bitcoin je omezený na 21 milionů mincí.',
+    'Ethereum je největší platforma pro smart kontrakty.',
+    'Stablecoiny drží hodnotu vůči fiat měnám.',
+  ];
+  let factIndex = 0;
+  
+  setInterval(() => {
+    factIndex = (factIndex + 1) % facts.length;
+    document.getElementById('fun-fact').innerText = facts[factIndex];
+  }, 8000);
+  
+  // === Fiktivní události ===
+  const events = [
+    'Ethereum Dencun upgrade 15. dubna',
+    'Zasedání Fedu – 17. dubna',
+    'Bitcoin halving – za 12 dní',
+  ];
+  
+  const eventList = document.getElementById('market-events-list');
+  eventList.innerHTML = '';
+  events.forEach(event => {
+    const li = document.createElement('li');
+    li.textContent = event;
+    eventList.appendChild(li);
+  });
+  
+  // === Dynamické načtení kryptoměn – pouze maketa ===
+  const cryptos = [
+    {
+      name: 'Bitcoin',
+      price: 64350,
+      change: 2.5,
+      score: 9,
+      reason: 'Dominantní pozice na trhu, pozitivní sentiment.',
+    },
+    {
+      name: 'Ethereum',
+      price: 3220,
+      change: 1.2,
+      score: 8,
+      reason: 'Přechod na PoS a DeFi ekosystém.',
+    },
+  ];
+  
+  const topCryptos = document.getElementById('top-cryptos');
+  
   cryptos.forEach(crypto => {
-    const analysis = technicalAnalysis(crypto);
-
-    if (analysis.recommended) {
-      const div = document.createElement("div");
-      div.className = "bg-white p-4 rounded shadow cursor-pointer hover:shadow-lg transition";
-      div.innerHTML = `
-        <h3 class="text-xl font-bold">${crypto.name}</h3>
-        <p>Cena: $${crypto.current_price}</p>
-        <p>Změna 24h: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
-        <p>Kapitalizace: $${(crypto.market_cap / 1e9).toFixed(2)}B</p>
-        <p>Objem: $${(crypto.total_volume / 1e6).toFixed(2)}M</p>
-        <p class="mt-2 text-green-600 font-semibold">${analysis.reason}</p>
-      `;
-      div.onclick = () => showDetail(crypto.id, crypto.name);
-      container.appendChild(div);
-    }
+    const card = document.createElement('div');
+    card.className = 'crypto-card';
+  
+    card.innerHTML = `
+      <h4>${crypto.name}</h4>
+      <div class="price">$${crypto.price}</div>
+      <div class="change" style="color: ${crypto.change >= 0 ? 'limegreen' : 'red'}">
+        ${crypto.change >= 0 ? '+' : ''}${crypto.change}% za 24h
+      </div>
+      <div class="score">Skóre: ${crypto.score}/10</div>
+      <p>${crypto.reason}</p>
+      <button>Zobrazit detail</button>
+    `;
+  
+    topCryptos.appendChild(card);
   });
-}
-
-renderCryptos();
+  

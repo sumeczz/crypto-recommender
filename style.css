@@ -1,12 +1,310 @@
-/* Vlastní styly */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* === Základní reset === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
   
-  #crypto-list div {
-    transition: transform 0.2s ease-in-out;
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    background-color: #0d1117;
+    color: #e6edf3;
+    transition: background-color 0.3s, color 0.3s;
+    padding-bottom: 80px;
   }
   
-  #crypto-list div:hover {
+  a {
+    color: #58a6ff;
+    text-decoration: none;
+  }
+  
+  ul {
+    list-style: none;
+  }
+  
+  /* === Tmavý a světlý režim === */
+  body.light-mode {
+    background-color: #f5f5f5;
+    color: #111;
+  }
+  
+  body.light-mode .header,
+  body.light-mode .top-picks,
+  body.light-mode .filters,
+  body.light-mode .market-map,
+  body.light-mode .market-analysis,
+  body.light-mode .education,
+  body.light-mode .newsletter,
+  body.light-mode footer {
+    background-color: #fff;
+    color: #111;
+  }
+  
+  /* === Hlavička === */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #161b22;
+    padding: 15px 30px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .header .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .header .logo img {
+    width: 40px;
+  }
+  
+  .nav ul {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .header-tools {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .header input {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: none;
+  }
+  
+  /* === Hero sekce === */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: linear-gradient(to right, #0d1117, #161b22);
+  }
+  
+  .hero h2 {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+  }
+  
+  .hero p {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+  
+  .hero .cta {
+    padding: 12px 24px;
+    font-size: 1rem;
+    background-color: #238636;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .market-summary {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 20px;
+    font-size: 0.9rem;
+  }
+  
+  /* === Top doporučení === */
+  .top-picks {
+    padding: 30px 20px;
+  }
+  
+  .crypto-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .crypto-card {
+    background-color: #161b22;
+    border-radius: 10px;
+    padding: 20px;
+    transition: transform 0.3s;
+  }
+  
+  .crypto-card:hover {
     transform: scale(1.02);
   }
+  
+  .crypto-card h4 {
+    margin-bottom: 10px;
+  }
+  
+  .crypto-card .price {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+  }
+  
+  .crypto-card .change {
+    font-weight: bold;
+  }
+  
+  .crypto-card .score {
+    margin-top: 10px;
+    background-color: #30363d;
+    border-radius: 5px;
+    padding: 5px;
+    text-align: center;
+  }
+  
+  /* === Filtry === */
+  .filters {
+    padding: 20px;
+  }
+  
+  .categories button {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 8px 16px;
+    border: none;
+    background-color: #21262d;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .advanced-filters select {
+    padding: 8px;
+    margin: 10px 10px 0 0;
+    border-radius: 5px;
+    border: none;
+  }
+  
+  /* === Market mapa === */
+  .market-map {
+    padding: 30px 20px;
+    background-color: #0d1117;
+  }
+  
+  /* === Analýza trhu === */
+  .market-analysis {
+    padding: 30px 20px;
+  }
+  
+  .market-metrics {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  
+  .market-events ul {
+    margin-top: 10px;
+  }
+  
+  /* === Vzdělávací sekce === */
+  .education {
+    padding: 30px 20px;
+    background-color: #161b22;
+  }
+  
+  .fact-box {
+    padding: 15px;
+    background-color: #21262d;
+    border-radius: 6px;
+    margin-bottom: 15px;
+  }
+  
+  /* === Newsletter === */
+  .newsletter {
+    padding: 30px 20px;
+    background-color: #0d1117;
+    text-align: center;
+  }
+  
+  .newsletter form {
+    margin-top: 15px;
+  }
+  
+  .newsletter input {
+    padding: 8px;
+    width: 250px;
+    border-radius: 5px;
+    border: none;
+  }
+  
+  .newsletter button {
+    padding: 8px 16px;
+    margin-left: 10px;
+    background-color: #238636;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  /* === Patička === */
+  footer {
+    background-color: #161b22;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+  }
+  
+  footer a {
+    margin-right: 10px;
+  }
+  
+  .footer-meta {
+    margin-top: 10px;
+  }
+  
+  /* === Cookie lišta === */
+  .cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #21262d;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    display: none;
+  }
+  
+  .cookie-banner button {
+    margin-left: 10px;
+    background-color: #238636;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  /* === Responsivita === */
+  @media (max-width: 768px) {
+    .market-summary {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .header-tools {
+      margin-top: 10px;
+      width: 100%;
+    }
+  
+    .header input {
+      width: 100%;
+    }
+  }
+  
