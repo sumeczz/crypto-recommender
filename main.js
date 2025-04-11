@@ -15,18 +15,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadRecommendations() {
         console.log('Spouštím načítání doporučení...');
+        cryptoList.innerHTML = '<p class="text-gray-600">Načítám data...</p>';
+
         const cryptos = await fetchCryptoList();
         console.log('Načteno kryptoměn:', cryptos.length);
 
         if (cryptos.length === 0) {
-            cryptoList.innerHTML = '<p class="text-red-600">Nepodařilo se načíst data. Zkontrolujte připojení nebo zkuste znovu později.</p>';
+            cryptoList.innerHTML = '<p class="text-red-600">Nepodařilo se načíst data. Zkuste znovu později.</p>';
             return;
         }
 
-        const priceHistories = await Promise.all(cryptos.map(c => fetchPriceHistory(c.id)));
+        // Načítáme historii jen pro prvních 10 kryptoměn, aby se předešlo 429
+        const priceHistories = await Promise.all(
+            cryptos.slice(0, 10).map(async (c, idx) => {
+                await new Promise(resolve => setTimeout(resolve, idx * 100)); // Prodleva 100ms mezi požadavky
+                return fetchPriceHistory(c.id);
+            })
+        );
         console.log('Načteny cenové historie:', priceHistories.length);
 
-        let recommendations = generateRecommendations(cryptos, priceHistories);
+        let recommendations = generateRecommendations(cryptos.slice(0, 10), priceHistories);
         console.log('Vygenerována doporučení:', recommendations);
 
         // Aplikace filtrů
@@ -74,12 +82,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!crypto || !priceHistory) {
             console.error('Nepodařilo se načíst detaily nebo historii');
+            modalDetails.innerHTML = '<p class="text-red-600">Chyba při načítání dat.</p>';
             return;
         }
 
         modalTitle.textContent = `${crypto.name} (${crypto.symbol.toUpperCase()})`;
         modalDetails.innerHTML = `
-            <p><strong>Aktuální cena:</strong> ${formatCurrency(crypto.market_data.current_price.usd)}</p>
+            <p><strong>Aktuání cena:</strong> ${formatCurrency(crypto.market_data.current_price.usd)}</p>
             <p><strong>Změna 24h:</strong> ${formatPercentage(crypto.market_data.price_change_percentage_24h)}</p>
             <p><strong>Tržní kapitalizace:</strong> ${formatCurrency(crypto.market_data.market_cap.usd)}</p>
             <p><strong>Technická analýza:</strong> ${generateRecommendations([crypto], [priceHistory])[0].analysis.reasons.technical}</p>
@@ -111,9 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializace a automatické obnovování
     console.log('Inicializuji aplikaci...');
-    loadRecommendations().catch(err => console.error('Chyba při inicializaci:', err));
+    loadRecommendations().catch(err => {
+        console.error('Chyba při inicializaci:', err);
+        cryptoList.innerHTML = '<p class="text-red-600">Chyba při načítání dat. Zkuste znovu později.</p>';
+    });
     setInterval(() => {
         console.log('Automatická aktualizace dat...');
         loadRecommendations();
-    }, 5 * 60 * 1000);
+    }, 10 * 60 * 1000); // Zvýšeno na 10 minut kvůli limitům API
 });
