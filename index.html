@@ -1,158 +1,78 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KryptoRadar – Doporučení kryptoměn</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krypto Doporučení</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="dark-mode">
+<body class="bg-gray-100">
+    <header class="bg-blue-600 text-white p-4">
+        <h1 class="text-2xl font-bold">Krypto Doporučení</h1>
+    </header>
 
-  <!-- 🔝 Záhlaví -->
-  <header class="header">
-    <div class="logo">
-      <img src="logo.svg" alt="Logo" />
-      <h1>KryptoRadar</h1>
-    </div>
+    <main class="container mx-auto p-4">
+        <!-- Filtry -->
+        <section id="filters" class="mb-6">
+            <h2 class="text-xl font-semibold mb-2">Filtrovat doporučení</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="volatility" class="block">Volatilita</label>
+                    <select id="volatility" class="w-full p-2 border rounded">
+                        <option value="all">Vše</option>
+                        <option value="low">Nízká</option>
+                        <option value="medium">Střední</option>
+                        <option value="high">Vysoká</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="growth" class="block">Potenciální růst</label>
+                    <select id="growth" class="w-full p-2 border rounded">
+                        <option value="all">Vše</option>
+                        <option value="low">Nízký</option>
+                        <option value="medium">Střední</option>
+                        <option value="high">Vysoký</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="risk" class="block">Riziko</label>
+                    <select id="risk" class="w-full p-2 border rounded">
+                        <option value="all">Vše</option>
+                        <option value="low">Nízké</option>
+                        <option value="medium">Střední</option>
+                        <option value="high">Vysoké</option>
+                    </select>
+                </div>
+            </div>
+        </section>
 
-    <nav class="nav">
-      <ul>
-        <li><a href="#">Hlavní stránka</a></li>
-        <li><a href="#">Top doporučení</a></li>
-        <li><a href="#">Analýzy</a></li>
-        <li><a href="#">Vzdělávání</a></li>
-        <li><a href="#">O nás</a></li>
-      </ul>
-    </nav>
+        <!-- Seznam doporučení -->
+        <section id="recommendations">
+            <h2 class="text-xl font-semibold mb-4">Doporučené kryptoměny</h2>
+            <div id="crypto-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
 
-    <div class="header-tools">
-      <input type="text" placeholder="Vyhledat kryptoměnu..." id="search-input" />
-      <button id="theme-toggle">🌓</button>
-    </div>
-  </header>
+        <!-- Detailní pohled (modální okno) -->
+        <div id="crypto-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+            <div class="bg-white p-6 rounded-lg w-full max-w-2xl">
+                <h2 id="modal-title" class="text-2xl font-bold mb-4"></h2>
+                <canvas id="price-chart" class="mb-4"></canvas>
+                <div id="modal-details" class="space-y-4"></div>
+                <button id="close-modal" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Zavřít</button>
+            </div>
+        </div>
+    </main>
 
-  <!-- 💥 Hero sekce -->
-  <section class="hero">
-    <h2>Investujte chytře s našimi aktuálními doporučeními</h2>
-    <p>Algoritmicky vybraná kryptoaktiva s nejvyšším potenciálem růstu</p>
-    <button class="cta">Zobrazit dnešní doporučení</button>
+    <footer class="bg-gray-800 text-white p-4 text-center">
+        <p>&copy; 2025 Krypto Doporučení. Všechna práva vyhrazena.</p>
+    </footer>
 
-    <div class="market-summary">
-      <span>Bitcoin Index: <strong id="btc-index">...</strong></span>
-      <span>Tržní kapitalizace: <strong id="market-cap">...</strong></span>
-    </div>
-  </section>
-
-  <!-- ⭐ Top doporučení -->
-  <section class="top-picks">
-    <h3>Top doporučení</h3>
-    <div class="crypto-cards" id="top-cryptos">
-      <!-- Dynamicky generované karty kryptoměn -->
-    </div>
-  </section>
-
-  <!-- 🧰 Sekce filtrů -->
-  <section class="filters">
-    <div class="categories">
-      <button>Všechny</button>
-      <button>Nízké riziko</button>
-      <button>Střední riziko</button>
-      <button>Vysoké riziko</button>
-      <button>Začátečníci</button>
-      <button>Pokročilí</button>
-    </div>
-
-    <div class="advanced-filters">
-      <select>
-        <option>Typ kryptoměny</option>
-        <option>Smart contract</option>
-        <option>DeFi</option>
-        <option>Meme coin</option>
-      </select>
-
-      <select>
-        <option>Časový horizont</option>
-        <option>Krátkodobá</option>
-        <option>Střednědobá</option>
-        <option>Dlouhodobá</option>
-      </select>
-
-      <select>
-        <option>Tržní kapitalizace</option>
-        <option>Malá</option>
-        <option>Střední</option>
-        <option>Velká</option>
-      </select>
-    </div>
-  </section>
-
-  <!-- 🌐 Interaktivní mapa trhu -->
-  <section class="market-map">
-    <h3>Mapa trhu</h3>
-    <div id="heatmap-placeholder">[Sem přijde heatmapa]</div>
-  </section>
-
-  <!-- 📊 Analýza trhu -->
-  <section class="market-analysis">
-    <h3>Analýza trhu</h3>
-    <div class="market-metrics">
-      <div>Kapitalizace: <span id="total-cap">...</span></div>
-      <div>Objem 24h: <span id="daily-volume">...</span></div>
-      <div>BTC dominance: <span id="btc-dominance">...</span></div>
-      <div>Sentiment: <span id="market-sentiment">Býčí</span></div>
-    </div>
-    <div class="market-events">
-      <h4>Hlavní události</h4>
-      <ul id="market-events-list">
-        <li>Loading...</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- 🎓 Edukativní sekce -->
-  <section class="education">
-    <div class="fact-box">
-      <strong>Věděli jste?</strong>
-      <p id="fun-fact">Bitcoin je omezený na 21 milionů mincí.</p>
-    </div>
-    <a href="#">📖 Články: Jak vybíráme doporučení</a>
-    <a href="#">🎥 Video: Jak začít investovat</a>
-  </section>
-
-  <!-- 📬 Newsletter -->
-  <section class="newsletter">
-    <h3>Odebírejte týdenní přehled</h3>
-    <p>Získejte čerstvá doporučení a přehled trhu přímo do e-mailu.</p>
-    <form id="newsletter-form">
-      <input type="email" placeholder="Váš e-mail" required />
-      <button type="submit">Dostávat týdenní přehled</button>
-    </form>
-  </section>
-
-  <!-- 🦶 Patička -->
-  <footer>
-    <div class="footer-links">
-      <a href="#">Kontakt</a>
-      <a href="#">Podmínky</a>
-      <a href="#">GDPR</a>
-      <a href="#">Ochrana investora</a>
-    </div>
-    <div class="footer-social">
-      <a href="#">Twitter</a>
-      <a href="#">Discord</a>
-      <a href="#">YouTube</a>
-    </div>
-    <div class="footer-meta">
-      <p>Data aktualizována před <span id="last-updated">5 minutami</span></p>
-    </div>
-  </footer>
-
-  <!-- 🍪 Cookie lišta -->
-  <div class="cookie-banner" id="cookie-banner">
-    Tento web používá cookies pro zlepšení služeb. <button id="accept-cookies">Souhlasím</button>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/analysis.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,16 @@
+/* Vlastní styly pro jemné doladění */
+.crypto-card {
+  transition: transform 0.2s;
+}
+
+.crypto-card:hover {
+  transform: scale(1.05);
+}
+
+#crypto-modal {
+  z-index: 1000;
+}
+
+canvas {
+  max-height: 300px;
+}
